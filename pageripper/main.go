@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"os"
 
@@ -42,10 +41,6 @@ func formatErrorMessage(optionalMessage string) string {
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	respBody := ripResponse{
-		Links: []string{"https://wakka.com", "https://wikka.com", "https://tambourine.com"},
-	}
-
 	var rr ripRequest
 
 	// Ensure the request contained a valid URL target
@@ -66,7 +61,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	// Ensure the supplied target is a valid URL
-	parsedUrl, parseErr := url.ParseRequestURI(rr.Target)
+	parsedURL, parseErr := url.ParseRequestURI(rr.Target)
 
 	if parseErr != nil {
 		log.WithFields(logrus.Fields{
@@ -79,7 +74,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 
-	if !parsedUrl.IsAbs() {
+	if !parsedURL.IsAbs() {
 		return events.APIGatewayProxyResponse{
 			Body: formatErrorMessage("Relative URLs such as /example.html are not supported. Please supply a full qualified URL such as https://www.example.com"),
 
@@ -87,11 +82,52 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 
-	// Dummy success response
-	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("links:%s", respBody.Links),
-		StatusCode: 200,
-	}, nil
+	// User-supplied URL passed sanity checks, so begin processing it
+	rr.ParsedURL = parsedURL
+
+	// Create 3 channels for each request:
+	// 1. chUrls handles links as they are found in the given page
+	// 2. chHosts handles link hostnames
+	// 3. chRipFinished serves to indicate when processing of all links is complete
+	chLinks := make(chan string)
+	chHosts := make(chan string)
+	chRipFinished := make(chan bool)
+
+	go rip(parsedURL, chLinks, chHosts, chRipFinished)
+
+	foundLinks := []string{}
+	foundHosts := []string{}
+
+	// Listen on channels for links and done status
+	for {
+		select {
+		case link := <-chLinks:
+			foundLinks = append(foundLinks, link)
+		case host := <-chHosts:
+			foundHosts = append(foundHosts, host)
+		case <-chRipFinished:
+			log.WithFields(logrus.Fields{
+				"Target URL": rr.ParsedURL,
+			}).Debug("Rip finished")
+
+			r := ripResponse{
+				Links: foundLinks,
+				Hosts: tallyCounts(foundHosts),
+			}
+			j, marshalErr := json.Marshal(&r)
+			if marshalErr != nil {
+				log.WithFields(logrus.Fields{
+					"Error": marshalErr,
+				}).Debug("Error marshaling response to JSON")
+			}
+
+			// Processing successful - return response with links and counts
+			return events.APIGatewayProxyResponse{
+				Body:       string(j),
+				StatusCode: 200,
+			}, nil
+		}
+	}
 }
 
 func main() {
