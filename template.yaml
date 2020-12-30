@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lambda-pageripper-sam
+
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  PageRipperFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: pageripper/
+      Handler: pageripper
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /rip
+            Method: POST
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  PageripperAPI:
+    Description: "API Gateway endpoint URL for Prod environment for Pageripper Function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/rip/"
+  PageRipperFunction:
+    Description: "Pageripper Function ARN"
+    Value: !GetAtt PageRipperFunction.Arn
+  PageRipperFunctionIamRole:
+    Description: "Implicit IAM Role created for Pageripper function"
+    Value: !GetAtt PageRipperFunctionRole.Arn
