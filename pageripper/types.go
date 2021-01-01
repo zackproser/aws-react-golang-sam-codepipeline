@@ -22,3 +22,7 @@ type ripResponse struct {
 type countResponse struct {
 	Count int `json:"count"`
 }
+
+type PagesRippedStats struct {
+	Count int64
+}

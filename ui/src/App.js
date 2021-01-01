@@ -356,8 +356,8 @@ class App extends Component {
   getUrlList (target) {
     this.startInitialTimer()
     this.setState({ showError: false })
-    fetch('/api/v1/rip', {
-      method: 'POST',
+    fetch('https://sa7iaj0fya.execute-api.us-east-1.amazonaws.com/Prod/rip/', {
+ method: 'POST',
       headers: this.getCommonHeaders(),
       body: JSON.stringify({ target })
    })

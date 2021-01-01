@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -40,6 +42,22 @@ func formatErrorMessage(optionalMessage string) string {
 }
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	devHeaders := make(map[string]string)
+	devHeaders["Access-Control-Allow-Origin"] = "*"
+	devHeaders["Access-Control-Allow-Methods"] = "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT"
+	devHeaders["Access-Control-Allow-Headers"] = "*"
+
+	fmt.Printf("%+v\n", request)
+
+	if strings.ToUpper(request.HTTPMethod) == "OPTIONS" {
+		log.Debug("RESPONDED TO OPTIONS")
+		return events.APIGatewayProxyResponse{
+			Body:       "Responded to OPTIONS",
+			Headers:    devHeaders,
+			StatusCode: 200,
+		}, nil
+	}
 
 	var rr ripRequest
 
@@ -121,8 +139,12 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				}).Debug("Error marshaling response to JSON")
 			}
 
+			// Store metrics on app usage in DynamoDB
+			// incrementCountOfPagesRipped(rr, r)
+
 			// Processing successful - return response with links and counts
 			return events.APIGatewayProxyResponse{
+				Headers:    devHeaders,
 				Body:       string(j),
 				StatusCode: 200,
 			}, nil
