@@ -16,6 +16,8 @@ phases:
 artifacts:
   files:
     - '**/*'
+  base-directory: ./ui/build
+  
 cache: 
   paths: 
     - './node_modules/**/*'
