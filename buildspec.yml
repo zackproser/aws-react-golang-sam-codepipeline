@@ -1,16 +1,21 @@
 version: 0.2
 phases:
-  pre_build:
+  install:
+    runtime-versions:
+      nodejs: 10
     commands:
       # Install react dependencies
-      - echo Installing source NPM dependencies...
+      - echo Installing NPM dependencies...
       - cd ui && npm install
   build:
     commands:
-      - echo Build started on `date`
       # Build react frontend app
       - cd ui && npm run build
 artifacts:
   files:
-    - '**/*'
+    - './ui/build/*'
   base-directory: ./ui/build
+
+cache: 
+  paths: 
+    - './node_modules/**/*'
