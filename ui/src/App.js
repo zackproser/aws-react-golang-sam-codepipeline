@@ -356,7 +356,7 @@ class App extends Component {
   getUrlList (target) {
     this.startInitialTimer()
     this.setState({ showError: false })
-    fetch('https://sa7iaj0fya.execute-api.us-east-1.amazonaws.com/Prod/rip/', {
+    fetch(process.env.REACT_APP_API_URL, {
  method: 'POST',
       headers: this.getCommonHeaders(),
       body: JSON.stringify({ target })
@@ -379,7 +379,7 @@ class App extends Component {
   }
 
   getRipCount() {
-    fetch('/api/v1/count', {
+    fetch(process.env.REACT_APP_COUNT_API_URL, {
       method: 'GET',
       headers: this.getCommonHeaders()
     })
