@@ -5,7 +5,7 @@ phases:
       nodejs: 10
     commands:
       # change directory to where the UI source files live - note that in buildspec v0.2 we only have to run cd once at the beginning
-      cd ui
+      - cd ui
       # Install react dependencies
       - echo Installing NPM dependencies...
       - npm install
