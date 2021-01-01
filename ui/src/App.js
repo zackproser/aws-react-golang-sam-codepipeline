@@ -425,9 +425,6 @@ class App extends Component {
                 <h1 className="App-title">PAGE RIPPER</h1>
               </div>
               <div className="col col-4 app-description">
-                <p>Get all URLs from a page in CSV format.</p>
-              </div>
-              <div className="col col-4 app-description">
                  <p><TooltipSection/></p>
                  <p>Created by <a href="https://zackproser.com">Zack Proser</a></p>
               </div>
