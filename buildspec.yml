@@ -1,12 +1,14 @@
-version: 0.1
+version: 0.2
 phases:
   pre_build:
     commands:
+      # Install react dependencies
       - echo Installing source NPM dependencies...
       - cd ui && npm install
   build:
     commands:
       - echo Build started on `date`
+      # Build react frontend app
       - cd ui && npm run build
 artifacts:
   files:
