@@ -3,7 +3,7 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies...
-      - npm install
+      - cd ui && npm install
   build:
     commands:
       - echo Build started on `date`
