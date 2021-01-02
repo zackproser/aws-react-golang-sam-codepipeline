@@ -32,7 +32,7 @@ class TooltipSection extends Component {
       What is this? <FontAwesome id="tippy" name="question-circle" style={{ color: '#fff' }} />
       <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="tippy" toggle={this.toggle}>
         <p>This is a full-stack application I built using <a href="https://golang.org/">Go</a> and <a href="https://reactjs.org/">React</a>.</p>
-        <p>This app will let you scrape data from a website and allow you to download it. In the future, extracting other types of data will also be supported</p>
+        <p>This app scrapes data from a website and allow you to download it. In the future, extracting other types of data will also be supported</p>
         <p>It leverages Go&#39;s concurrency model to divide work across CPU cores, so it is FAST.</p>
         <p>I used Docker to package the application and Kubernetes to run it on Google Container Engine.</p>
       </Tooltip>
