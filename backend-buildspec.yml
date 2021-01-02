@@ -2,9 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - aws cloudformation package --template-file template.yaml --s3-bucket codepipeline-us-east-1-220540314609 --output-template-file packaged.yaml
+      - aws cloudformation package --template-file template.yaml --s3-bucket pageripper-serverless --output-template-file packaged.yaml
 artifacts:
-  type: zip
   files:
-    - template.yaml
     - packaged.yaml
