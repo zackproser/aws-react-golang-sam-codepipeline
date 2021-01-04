@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"os"
 	"strings"
@@ -48,9 +47,6 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	devHeaders["Access-Control-Allow-Methods"] = "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT"
 	devHeaders["Access-Control-Allow-Headers"] = "*"
 	devHeaders["X-Test-End-To-End-CICD"] = "True"
-	devHeaders["X-Test-Again"] = "True"
-
-	fmt.Printf("%+v\n", request)
 
 	if strings.ToUpper(request.HTTPMethod) == "OPTIONS" {
 		log.Debug("RESPONDED TO OPTIONS")
