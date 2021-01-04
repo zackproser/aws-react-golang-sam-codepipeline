@@ -48,6 +48,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	devHeaders["Access-Control-Allow-Methods"] = "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT"
 	devHeaders["Access-Control-Allow-Headers"] = "*"
 	devHeaders["X-Test-End-To-End-CICD"] = "True"
+	devHeaders["X-Test-Again"] = "True"
 
 	fmt.Printf("%+v\n", request)
 
