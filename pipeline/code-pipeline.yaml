@@ -155,10 +155,11 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
-                RoleArn: arn:aws:iam::675304494746:role/pageripper-code-pipeline-CFNRole-MHU8IPSGUPKG
                 ActionMode: CHANGE_SET_REPLACE
+                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
                 TemplatePath: SAMBuildArtifact::packaged.yaml
                 ChangeSetName: !Join ['-', [!Ref ProjectName, 'changeset']]
+                RoleArn: arn:aws:iam::675304494746:role/pageripper-code-pipeline-CFNRole-MHU8IPSGUPKG
                 StackName: !Join ['-', [!Ref ProjectName, 'stack']]
               InputArtifacts:
                 - Name: SAMBuildArtifact
