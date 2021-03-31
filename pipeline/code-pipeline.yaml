@@ -149,6 +149,7 @@ Resources:
         - Name: DeployBackend
           Actions:
             - Name: CreateSAMChangeset
+              RoleArn: !GetAtt PipelineRole.Arn
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
@@ -164,6 +165,7 @@ Resources:
                 - Name: SAMBuildArtifact
               RunOrder: 1
             - Name: ExecuteSAMChangeset
+              RoleArn: !GetAtt PipelineRole.Arn
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
