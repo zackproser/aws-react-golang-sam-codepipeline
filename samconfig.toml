@@ -3,8 +3,9 @@ version = 0.1
 [default.deploy]
 [default.deploy.parameters]
 stack_name = "pageripper-sam"
-s3_bucket = "pageripper-serverless"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-3hy22v7vhaq8"
 s3_prefix = "pageripper-sam"
-region = "us-east-1"
+region = "us-west-2"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
+profile = "zack-test-aws"
