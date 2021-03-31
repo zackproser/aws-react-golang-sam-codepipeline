@@ -33,6 +33,8 @@ Outputs:
   PageripperAPI:
     Description: "API Gateway endpoint URL for Prod environment for Pageripper Function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/rip/"
+    Export:
+      Name: !Sub "${AWS::StackName}-URL-API"
   PageRipperFunction:
     Description: "Pageripper Function ARN"
     Value: !GetAtt PageRipperFunction.Arn
