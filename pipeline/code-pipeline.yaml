@@ -157,7 +157,8 @@ Resources:
               Configuration:
                 RoleArn: !GetAtt PipelineRole.Arn
                 ActionMode: CHANGE_SET_REPLACE
-                Capabilities: CAPABILITY_IAM
+                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+                ParameterOverrides: {}
                 TemplatePath: SAMBuildArtifact::packaged.yaml
                 ChangeSetName: !Join ['-', [!Ref ProjectName, 'changeset']]
                 StackName: !Join ['-', [!Ref ProjectName, 'stack']]
@@ -172,7 +173,6 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
-                RoleArn: !GetAtt PipelineRole.Arn
                 ActionMode: CHANGE_SET_EXECUTE
                 ChangeSetName: !Join ['-', [!Ref ProjectName, 'changeset']]
                 StackName: !Join ['-', [!Ref ProjectName, 'stack']]
