@@ -155,10 +155,8 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
-                RoleArn: !GetAtt PipelineRole.Arn
+                RoleArn: arn:aws:iam::675304494746:role/pageripper-code-pipeline-CFNRole-MHU8IPSGUPKG
                 ActionMode: CHANGE_SET_REPLACE
-                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
-                ParameterOverrides: {}
                 TemplatePath: SAMBuildArtifact::packaged.yaml
                 ChangeSetName: !Join ['-', [!Ref ProjectName, 'changeset']]
                 StackName: !Join ['-', [!Ref ProjectName, 'stack']]
@@ -166,7 +164,6 @@ Resources:
                 - Name: SAMBuildArtifact
               RunOrder: 1
             - Name: ExecuteSAMChangeset
-              RoleArn: !GetAtt PipelineRole.Arn
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
