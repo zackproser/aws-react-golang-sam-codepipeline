@@ -13,8 +13,6 @@ phases:
     commands:
       # Build react frontend app
       - npm run build
-  post-build: 
-      - echo deploying SPA to S3...
 artifacts:
   files:
     - '**/*'
