@@ -4,6 +4,7 @@
 aws cloudformation deploy --template-file code-pipeline.yaml --stack-name pageripper-code-pipeline --profile zack-test-aws --region us-west-2 --parameter-overrides GithubOAuthToken=$GITHUB_OAUTH_TOKEN --capabilities CAPABILITY_NAMED_IAM
 ```
 
+
 This app leverages the `git push deployment` model, by creating a code pipeline leveraging CodeBuild and CodeDeploy for the frontend and backend. The code pipeline itself is codified via a Cloudformation template, which must be deployed prior to development on the frontend or backend.
 
 This app is comprised of a React.js frontend and an AWS lambda leveraging the Golang runtime as a backend.
