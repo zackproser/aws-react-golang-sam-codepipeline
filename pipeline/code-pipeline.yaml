@@ -159,7 +159,7 @@ Resources:
                 Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
                 TemplatePath: SAMBuildArtifact::packaged.yaml
                 ChangeSetName: !Join ['-', [!Ref ProjectName, 'changeset']]
-                RoleArn: !GetAtt CFNRole.Arn
+                RoleArn: !GetAtt CloudFormationServiceRole.Arn
                 StackName: !Join ['-', [!Ref ProjectName, 'stack']]
               InputArtifacts:
                 - Name: SAMBuildArtifact
@@ -222,27 +222,6 @@ Resources:
       TargetPipelineVersion: !GetAtt Pipeline.Version
       RegisterWithThirdParty: 'true'
 
-  CFNRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action: ['sts:AssumeRole']
-            Effect: Allow
-            Principal:
-              Service: [cloudformation.amazonaws.com]
-        Version: '2012-10-17'
-      Path: /
-      Policies:
-        - PolicyName: CloudformationRole
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Action:
-                  - 's3:*'
-                Effect: Allow
-                Resource: '*'
-
   PipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -303,6 +282,122 @@ Resources:
                   - 'codebuild:*'
                 Effect: Allow
                 Resource: '*'
+
+  CloudFormationServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Policies:
+        - PolicyName: CloudFormationTrustPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - Fn::Sub: arn:aws:s3:::${ArtifactStoreBucket}/*
+              - Effect: Allow
+                Action:
+                  - lambda:*
+                Resource:
+                  - Fn::Sub: arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
+              - Effect: Allow
+                Action:
+                  - lambda:GetEventSourceMapping
+                  - lambda:CreateEventSourceMapping
+                  - lambda:DeleteEventSourceMapping
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - apigateway:*
+                Resource:
+                  - Fn::Sub: arn:aws:apigateway:${AWS::Region}::*
+              - Effect: Allow
+                Action:
+                  - sns:*
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - sqs:*
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:PutRolePolicy
+                Resource:
+                  - Fn::Sub: arn:aws:iam::${AWS::AccountId}:role/*
+              - Effect: Allow
+                Action:
+                  - iam:AttachRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:DetachRolePolicy
+                Resource:
+                  - Fn::Sub: arn:aws:iam::${AWS::AccountId}:role/*
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - cloudformation:CreateChangeSet
+                Resource:
+                  - Fn::Sub: arn:aws:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31
+                  - Fn::Sub: arn:aws:cloudformation:${AWS::Region}:aws:transform/Include
+              - Effect: Allow
+                Action:
+                  - codedeploy:CreateApplication
+                  - codedeploy:DeleteApplication
+                  - codedeploy:RegisterApplicationRevision
+                Resource:
+                  - Fn::Sub: arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:application:*
+              - Effect: Allow
+                Action:
+                  - codedeploy:CreateDeploymentGroup
+                  - codedeploy:CreateDeployment
+                  - codedeploy:GetDeployment
+                Resource:
+                  - Fn::Sub: arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:*
+              - Effect: Allow
+                Action:
+                  - codedeploy:GetDeploymentConfig
+                Resource:
+                  - Fn::Sub: arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentconfig:*
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                Resource:
+                  - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeVpcs
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                Resource:
+                  - "*"
 
 Outputs:
   AppURL:
