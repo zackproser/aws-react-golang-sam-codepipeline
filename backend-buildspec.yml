@@ -4,7 +4,7 @@ phases:
     commands:
       - cd pageripper && GOOS=linux GOARCH=amd64 go build
       - cd ..
-      - aws cloudformation package --template-file template.yaml --s3-bucket pageripper-serverless --output-template-file packaged.yaml
+      - aws cloudformation package --template-file template.yaml --s3-bucket DESTINATION_S3_BUCKET --output-template-file packaged.yaml
 artifacts:
   files:
     - packaged.yaml
