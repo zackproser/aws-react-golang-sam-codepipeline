@@ -27,6 +27,9 @@ Resources:
           Properties:
             Path: "/{proxy+}"
             Method: ANY
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: pageripper
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

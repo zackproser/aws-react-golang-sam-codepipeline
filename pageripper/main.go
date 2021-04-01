@@ -127,8 +127,9 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			}).Debug("Rip finished")
 
 			r := ripResponse{
-				Links: foundLinks,
-				Hosts: tallyCounts(foundHosts),
+				Links:    foundLinks,
+				Hosts:    tallyCounts(foundHosts),
+				RipCount: readRipCount(),
 			}
 			j, marshalErr := json.Marshal(&r)
 			if marshalErr != nil {

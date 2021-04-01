@@ -2,9 +2,9 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "pageripper-sam"
+stack_name = "PageRipper-stack"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-3hy22v7vhaq8"
-s3_prefix = "pageripper-sam"
+s3_prefix = "PageRipper-stack"
 region = "us-west-2"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"

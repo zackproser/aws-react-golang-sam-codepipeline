@@ -15,8 +15,9 @@ type ripErrorResponse struct {
 
 // A scraped links response from the backend
 type ripResponse struct {
-	Links []string       `json:"links"`
-	Hosts map[string]int `json:"hostnames"`
+	Links    []string       `json:"links"`
+	Hosts    map[string]int `json:"hostnames"`
+	RipCount int            `json:"ripcount"`
 }
 
 type countResponse struct {

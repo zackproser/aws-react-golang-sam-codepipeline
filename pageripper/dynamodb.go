@@ -1,12 +1,57 @@
 package main
 
-/*var svc *DynamoDB
+import (
+	"fmt"
+	"log"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+)
+
+var dynamoDBSvc *dynamodb.DynamoDB
 
 func init() {
 
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2"),
 	}))
 
-	svc = dynamodb.New(sess)
-}*/
+	dynamoDBSvc = dynamodb.New(sess)
+}
+
+func readRipCount() int {
+
+	type Item struct {
+		Count int
+	}
+
+	tableName := "pageripper"
+	result, err := dynamoDBSvc.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"url": {
+				S: aws.String("system"),
+			},
+		},
+	})
+	if err != nil {
+		log.Fatalf("Got error calling GetItem: %s", err)
+	}
+
+	if result.Item == nil {
+		log.Fatalf("Could not find item")
+	}
+
+	item := Item{}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+	if err != nil {
+		log.Fatalf("Could not unmarshal DynamoDB item map to item struct")
+	}
+
+	fmt.Printf("Found item: %+v\n", item.Count)
+
+	return item.Count
+}
