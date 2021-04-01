@@ -232,7 +232,7 @@ class UsageMetrics extends Component {
   }
 
   render() {
-    return (
+    return this.props.ripCount == null ? (<span></span>) : (
       <div className="usage-metrics">
         <span>This app has ripped <span className="badge badge-danger">{this.props.ripCount}</span> pages</span>
       </div>
@@ -274,7 +274,7 @@ class App extends Component {
     this.state = {
       links: [],
       hosts: {},
-      ripCount: 100
+      ripCount: null
     }
   }
 
@@ -366,10 +366,12 @@ class App extends Component {
       this.getProcessingTime()
     if (typeof body.links !== 'undefined') {
       this.setUrlListState(target, body.links)
-      this.getRipCount()
     }
     if (typeof body.hostnames !== 'undefined') {
       this.setHostnamesState(body.hostnames)
+    }
+if (typeof body.ripcount !== "undefined") {
+      this.setRipCountState(body.ripcount)
     }
    })
    .catch((error) => {

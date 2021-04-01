@@ -10,7 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-var dynamoDBSvc *dynamodb.DynamoDB
+var (
+	tableName   = "pageripper"
+	dynamoDBSvc *dynamodb.DynamoDB
+)
 
 func init() {
 
@@ -21,13 +24,51 @@ func init() {
 	dynamoDBSvc = dynamodb.New(sess)
 }
 
+type RipCountKey struct {
+	URL string `json:"url"`
+}
+
+type RipCountInc struct {
+	Increment int `json:":c"`
+}
+
+func updateRipCount() error {
+
+	key, err := dynamodbattribute.MarshalMap(RipCountKey{
+		URL: "system",
+	})
+
+	if err != nil {
+		return err
+	}
+
+	increment, err := dynamodbattribute.MarshalMap(RipCountInc{
+		Increment: 1,
+	})
+
+	input := &dynamodb.UpdateItemInput{
+		TableName:                 aws.String(tableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		ExpressionAttributeValues: increment,
+		UpdateExpression:          aws.String("set c = c + :c"),
+	}
+
+	fmt.Printf("input: %+v\n", input)
+
+	_, err = dynamoDBSvc.UpdateItem(input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func readRipCount() int {
 
 	type Item struct {
-		Count int
+		C int
 	}
 
-	tableName := "pageripper"
 	result, err := dynamoDBSvc.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -51,7 +92,7 @@ func readRipCount() int {
 		log.Fatalf("Could not unmarshal DynamoDB item map to item struct")
 	}
 
-	fmt.Printf("Found item: %+v\n", item.Count)
+	fmt.Printf("Found item: %+v\n", item.C)
 
-	return item.Count
+	return item.C
 }

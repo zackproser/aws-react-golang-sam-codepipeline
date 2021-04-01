@@ -46,10 +46,8 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	devHeaders["Access-Control-Allow-Origin"] = "*"
 	devHeaders["Access-Control-Allow-Methods"] = "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT"
 	devHeaders["Access-Control-Allow-Headers"] = "*"
-	devHeaders["X-Test-End-To-End-CICD"] = "True"
 
 	if strings.ToUpper(request.HTTPMethod) == "OPTIONS" {
-		log.Debug("RESPONDED TO OPTIONS")
 		return events.APIGatewayProxyResponse{
 			Body:       "Responded to OPTIONS",
 			Headers:    devHeaders,
@@ -126,20 +124,26 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				"Target URL": rr.ParsedURL,
 			}).Debug("Rip finished")
 
+			// Increment count of pages ripped
+			updateErr := updateRipCount()
+			if updateErr != nil {
+				log.WithFields(logrus.Fields{
+					"Error": updateErr,
+				}).Debug("Error updating rip count in DynamoDB")
+			}
+
 			r := ripResponse{
 				Links:    foundLinks,
 				Hosts:    tallyCounts(foundHosts),
 				RipCount: readRipCount(),
 			}
+
 			j, marshalErr := json.Marshal(&r)
 			if marshalErr != nil {
 				log.WithFields(logrus.Fields{
 					"Error": marshalErr,
 				}).Debug("Error marshaling response to JSON")
 			}
-
-			// Store metrics on app usage in DynamoDB
-			// incrementCountOfPagesRipped(rr, r)
 
 			// Processing successful - return response with links and counts
 			return events.APIGatewayProxyResponse{
