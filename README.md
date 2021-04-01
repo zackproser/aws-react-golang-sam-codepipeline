@@ -2,9 +2,8 @@
 
 - [] Instrument correct region selection in SAM backend (for querying dynamoDB table)
 - [] Codify dynamoDB table in SAM template
-- [] Extend UI to read Ripcount on pageload and on response
+- [x] Extend UI to read Ripcount on pageload and on response
 - [] Extend dynamoDB logic to write all rips to dynamoDB
-
 
 # Create code pipeline
 
