@@ -1,5 +1,6 @@
 # Table of contents
 * [Overview](#overview)
+* [Read the technical deep dive](#read-the-technical-deep-dive) 
 * [Getting Started](#getting-started)
 * [Developing the application locally](#developing-the-application-locally)
 * [How the code is organized](#how-the-code-is-organized)
@@ -37,6 +38,10 @@ Here's what the UI looks like in action:
 ### Code pipeline flow
 
 ![Pageripper codepipeline flow](./doc/pageripper-codepipeline.png)
+
+# Read the technical deep dive
+
+I wrote a technical tutorial on how the components of this app all fit together, why I made some of the choices I did, what the tradeoffs were, and some of the things I learned along the way. Be sure to check out the article for more information, and subscribe if you found it useful. 
 
 # Getting started
 
