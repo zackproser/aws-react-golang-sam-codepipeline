@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -99,18 +101,44 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	// User-supplied URL passed sanity checks, so begin processing it
 	rr.ParsedURL = parsedURL
 
-	// Create 3 channels for each request:
+	var client = &http.Client{}
+
+	log.WithFields(logrus.Fields{
+		"URL": parsedURL.String(),
+	}).Debug("Ripping target")
+
+	resp, fetchErr := client.Get(parsedURL.String())
+
+	if fetchErr != nil {
+		log.WithFields(logrus.Fields{
+			"URL":   parsedURL.String(),
+			"Error": fetchErr,
+		}).Debug("Could not fetch target")
+		return events.APIGatewayProxyResponse{
+			Body:       formatErrorMessage(fmt.Sprintf("Could not retrieve URL: %s", parsedURL.String())),
+			StatusCode: 422,
+		}, nil
+	}
+	// We fire off the request to update the DynamoDB count of total jobs processed in a goroutine, because we
+	// don't want to block the response from returning as quickly as possible. It's not critical if the user's count
+	// is off by one, since this metric is more for fun than anything else
+	go updateRipCount()
+
+	// Create 4 channels for each request:
 	// 1. chUrls handles links as they are found in the given page
 	// 2. chHosts handles link hostnames
-	// 3. chRipFinished serves to indicate when processing of all links is complete
+	// 3. chRipCount retrieves the current count of total jobs processed
+	// 4. chRipFinished serves to indicate when processing of all links is complete
 	chLinks := make(chan string)
 	chHosts := make(chan string)
+	chRipCount := make(chan int)
 	chRipFinished := make(chan bool)
 
-	go rip(parsedURL, chLinks, chHosts, chRipFinished)
+	go rip(parsedURL, resp.Body, chLinks, chHosts, chRipCount, chRipFinished)
 
 	foundLinks := []string{}
 	foundHosts := []string{}
+	retrievedRipCount := 0
 
 	// Listen on channels for links and done status
 	for {
@@ -119,23 +147,18 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			foundLinks = append(foundLinks, link)
 		case host := <-chHosts:
 			foundHosts = append(foundHosts, host)
+
+		case count := <-chRipCount:
+			retrievedRipCount = count
 		case <-chRipFinished:
 			log.WithFields(logrus.Fields{
 				"Target URL": rr.ParsedURL,
 			}).Debug("Rip finished")
 
-			// Increment count of pages ripped
-			updateErr := updateRipCount()
-			if updateErr != nil {
-				log.WithFields(logrus.Fields{
-					"Error": updateErr,
-				}).Debug("Error updating rip count in DynamoDB")
-			}
-
 			r := ripResponse{
 				Links:    foundLinks,
 				Hosts:    tallyCounts(foundHosts),
-				RipCount: readRipCount(),
+				RipCount: retrievedRipCount,
 			}
 
 			j, marshalErr := json.Marshal(&r)

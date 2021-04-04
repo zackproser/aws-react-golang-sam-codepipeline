@@ -1,48 +1,46 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
 
-	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/html"
 )
 
 var client = &http.Client{}
 
 // Take a target URL, fetch it and hand off its body for processing
-func rip(target *url.URL, chLinks chan<- string, chHosts chan<- string, chDone chan<- bool) {
+func rip(target *url.URL, respBody io.ReadCloser, chLinks chan<- string, chHosts chan<- string, chRipCount chan<- int, chDone chan<- bool) {
 
-	log.WithFields(logrus.Fields{
-		"Target URL": target,
-	}).Debug("Ripping target")
-
-	resp, fetchErr := client.Get(target.String())
-
-	if fetchErr != nil {
-		log.WithFields(logrus.Fields{
-			"Target URL": target,
-			"Error":      fetchErr,
-		}).Debug("Could not fetch URL")
-		chDone <- true
-		return
-	}
-
-	parse(target, resp.Body, chLinks, chHosts, chDone)
-}
-
-// Parse all links found in the response body
-func parse(target *url.URL, b io.ReadCloser, chLinks chan<- string, chHosts chan<- string, chDone chan<- bool) {
-	fmt.Printf("parse")
-	//When processing is complete, send on the done channel
 	defer func() {
 		chDone <- true
 	}()
 
+	countRetrieved, parseComplete := false, false
+
+	chCountRetrieved := make(chan bool)
+	chParseComplete := make(chan bool)
+
+	go parse(target, respBody, chLinks, chHosts, chParseComplete)
+
+	go readRipCount(chRipCount, chCountRetrieved)
+
+	for !countRetrieved && !parseComplete {
+		select {
+		case <-chCountRetrieved:
+			countRetrieved = true
+
+		case <-chParseComplete:
+			parseComplete = true
+		}
+	}
+
+}
+
+// Parse all links found in the response body
+func parse(target *url.URL, b io.ReadCloser, chLinks chan<- string, chHosts chan<- string, chDone chan<- bool) {
 	// Tokenize the response body
 	// Loop through it looking for
 	// well-formed <a> tags and send their

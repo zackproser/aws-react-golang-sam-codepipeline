@@ -1,7 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Description: >
-  This Cloudformation template deploys a CI/CD pipeline that instruments a git push deployment model, deploying changes to the frontend React.js app to an S3 bucket that hosts a static website, and deploying changes to the backend via Cloudformation change sets
+  This Cloudformation template deploys a CI/CD pipeline that instruments a git push deployment model, 
+  deploying changes to the frontend React.js app to an S3 bucket that hosts a static website, 
+  and deploying changes to the backend via Cloudformation change sets
 
 Parameters:
   # The Github personal access token is used to a) create a Third Party source connection with the Github repository so that project source code can be fetched and
@@ -16,10 +18,27 @@ Parameters:
     MinLength: 40
     MaxLength: 40
     AllowedPattern: '[a-z0-9]*'
+  # Optional parameters begin here, because all that follow include a Default property that will be used if no value is passed
   ProjectName:
     Type: String
     Description: The name of the project being built
     Default: PageRipper
+  Owner:
+    Type: String
+    Description: The Github owner of the target project to be built
+    Default: zackproser
+  Repo:
+    Type: String
+    Description: The name of the Github repository to fetch and build
+    Default: lambda-pageripper-sam
+  Branch:
+    Type: String
+    Description: The name of the Github repository branch to fetch and build
+    Default: master
+  PipelineName:
+    Type: String
+    Description: The name of the CodePipeline pipeline
+    Default: pageripper-code-pipeline
 
 Resources:
   # The SPA Bucket is the static website S3 bucket that will host the React.js frontend. As such, it requires PublicRead
@@ -107,6 +126,8 @@ Resources:
         BuildSpec: backend-buildspec.yml
       TimeoutInMinutes: 10
 
+  # This is the main code pipeline that orchestrates actions between checking out the code from the project Github repository,
+  # to running `sam package` on the
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -114,7 +135,7 @@ Resources:
         Location: !Ref 'ArtifactStoreBucket'
         Type: S3
       RestartExecutionOnUpdate: true
-      Name: 'pageripper-code-pipeline'
+      Name: !Ref PipelineName
       RoleArn: !GetAtt PipelineRole.Arn
       Stages:
         - Name: Source
@@ -127,9 +148,9 @@ Resources:
                 Provider: GitHub
                 Version: 1
               Configuration:
-                Owner: 'zackproser'
-                Repo: 'lambda-pageripper-sam'
-                Branch: 'master'
+                Owner: !Ref Owner
+                Repo: !Ref Repo
+                Branch: !Ref Branch
                 PollForSourceChanges: false
                 OAuthToken: !Ref GithubOAuthToken
               OutputArtifacts:
@@ -210,7 +231,8 @@ Resources:
                 Extract: true
               RunOrder: 1
 
-
+  # This creates a Github webhook that listens for pushes to the repository. Pushes cause the Source step defined in the CodePipeline to run,
+  # fetching the latest code from the Github repository so that the subsequent CodeBuild steps can be run on it
   GithubWebhook:
     Type: 'AWS::CodePipeline::Webhook'
     Properties:

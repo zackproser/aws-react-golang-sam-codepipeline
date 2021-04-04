@@ -32,9 +32,7 @@ class TooltipSection extends Component {
       What is this? <FontAwesome id="tippy" name="question-circle" style={{ color: '#fff' }} />
       <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="tippy" toggle={this.toggle}>
         <p>This is a full-stack application I built using <a href="https://golang.org/">Go</a> and <a href="https://reactjs.org/">React</a>.</p>
-        <p>This app scrapes data from a website and allow you to download it. In the future, extracting other types of data will also be supported</p>
-        <p>It leverages Go&#39;s concurrency model to divide work across CPU cores, so it is FAST.</p>
-        <p>I used Docker to package the application and Kubernetes to run it on Google Container Engine.</p>
+        <p>This app scrapes data from a website and allow you to download it.</p>
       </Tooltip>
       </div>
     )
@@ -199,7 +197,7 @@ class ScrapedLinks extends Component {
               <div className="card card-inverse card-container">
                 <div className="card-block">
                   <h3 className="card-title">{this.props.target}</h3>
-                  <p className="card-text">Found {this.props.links.length} links in {this.props.processingMilliseconds} milliseconds</p>
+                  <p className="card-text">Found {this.props.links.length} links in {this.props.processingSeconds} seconds</p>
                   {/* Dumb fix for table width bug in bootstrap v4 */}
                   <div class="row justify-content-center">
                     <div class="table-responsive col col-8">
@@ -313,12 +311,9 @@ class App extends Component {
   getProcessingTime () {
     const complete = new Date()
     let diff = this.state.init - complete
-    diff /= 1000
-    const milliseconds = Math.abs(diff)
-    const seconds = Math.round(diff % 60)
+    let seconds = Math.abs(diff /= 1000)
     this.setState({
-      processingSeconds: seconds,
-      processingMilliseconds: milliseconds
+      processingSeconds: seconds
     })
   }
 
@@ -439,7 +434,7 @@ if (typeof body.ripcount !== "undefined") {
           <Form fetchHandler={this.getUrlList.bind(this)}/>
           <ScrapedLinks
             showResults={this.state.showResults}
-            processingMilliseconds={this.state.processingMilliseconds}
+            processingSeconds={this.state.processingSeconds}
             target={this.state.target}
             links={this.state.links} />
           <HostnameInfo

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -15,6 +14,7 @@ var (
 	dynamoDBSvc *dynamodb.DynamoDB
 )
 
+// init is run the first time this package is instantiated, so it's a good place to do the DynamoDB service setup
 func init() {
 
 	sess := session.Must(session.NewSession(&aws.Config{
@@ -32,14 +32,17 @@ type RipCountInc struct {
 	Increment int `json:":c"`
 }
 
-func updateRipCount() error {
+// updateRipCount increments the special "system" entry for tracking the overall number of jobs the app has run
+func updateRipCount() {
 
 	key, err := dynamodbattribute.MarshalMap(RipCountKey{
 		URL: "system",
 	})
 
 	if err != nil {
-		return err
+		log.WithFields(logrus.Fields{
+			"Error": err,
+		}).Debug("Error marshalling rip count increment to map")
 	}
 
 	increment, err := dynamodbattribute.MarshalMap(RipCountInc{
@@ -54,16 +57,20 @@ func updateRipCount() error {
 		UpdateExpression:          aws.String("set c = c + :c"),
 	}
 
-	fmt.Printf("input: %+v\n", input)
-
 	_, err = dynamoDBSvc.UpdateItem(input)
 	if err != nil {
-		return err
+		log.WithFields(logrus.Fields{
+			"Error": err,
+		}).Debug("Error updating rip count in DynamoDB")
 	}
-	return nil
 }
 
-func readRipCount() int {
+// readRipCount retrieves the value of total jobs processed by the app, stored in the DynamoDB system key
+func readRipCount(chRipCount chan<- int, chCountRetrieved chan<- bool) {
+
+	defer func() {
+		chCountRetrieved <- true
+	}()
 
 	type Item struct {
 		C int
@@ -92,7 +99,15 @@ func readRipCount() int {
 		log.Fatalf("Could not unmarshal DynamoDB item map to item struct")
 	}
 
-	fmt.Printf("Found item: %+v\n", item.C)
+	if item.C == 0 {
+		log.Debug("Retrieved rip count from DynamoDB was 0")
+		chCountRetrieved <- true
+		return
+	}
 
-	return item.C
+	log.WithFields(logrus.Fields{
+		"Rip Count": item.C,
+	}).Debug("Successfully retrieved ripCount from DynamoDB")
+
+	chRipCount <- item.C
 }
