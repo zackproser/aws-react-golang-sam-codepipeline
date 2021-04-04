@@ -106,4 +106,22 @@ If there are issues resolving packages
 # blow away the local node_modules folder and reinstall
 rm -rf node_modules && npm i
 ```
+# How the code is organized
 
+### Code pipeline
+The CloudFormation template that defines all the resources comprising the code pipeline and their relationships is in `pipeline/code-pipeline.yml`.
+
+### The React.js user interface
+The UI for the app is in the `ui` folder. It contains all the source code, package.json, etc. Everything needed to install the frontend application's dependencies and to run it locally.
+
+### The SAM Golang Lambda backend
+The source code for the Lambda function itself lives in the `pageripper` directory. When you run `sam build` locally, the go source files in this directory are built into the `.sam-build` directory.
+
+### The SAM template file and the build-spec files
+The `template.yml` file in the root of this repository is the CloudFormation template associated with the AWS SAM framework. It describes the serverless application and its components and configuration. When you run `sam package` or `sam deploy --guided` locally, this template is consulted and fed into CloudFormation which then builds the described components in your target account.
+
+Meanwhile, the code pipeline uses two AWS CodeBuild projects. CodeBuild projects look for a `buildspec.yml` file at build time. In the case of this project, there are two buidspec files, `ui-buildspec.yml` and `backend-buildspec.yml` that are used by their respective CodeBuild projects.
+
+The CodeBuild project for the backend / SAM application actually uses AWS Sam CLI commands to package the Lambda function and store it in the defined S3 bucket, and one of the input parameters it uses to do this is the `template.yml` wherein SAM resources are defined.
+
+It is used by commands defined in the
