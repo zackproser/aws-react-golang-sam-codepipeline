@@ -124,4 +124,6 @@ Meanwhile, the code pipeline uses two AWS CodeBuild projects. CodeBuild projects
 
 The CodeBuild project for the backend / SAM application actually uses AWS Sam CLI commands to package the Lambda function and store it in the defined S3 bucket, and one of the input parameters it uses to do this is the `template.yml` wherein SAM resources are defined.
 
-It is used by commands defined in the
+# Feedback 
+
+I hope this example repository and its associated tutorial are helpful to you in some way. If you have feedback you can contact me via [LinkedIn](https://www.linkedin.com/in/zackproser/) or submit a Github issue to this repository. 
