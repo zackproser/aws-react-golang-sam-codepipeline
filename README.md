@@ -1,3 +1,11 @@
+# Table of contents
+* [Overview](#overview)
+* [Getting Started](#getting-started)
+* [Developing the application locally](#developing-the-application-locally)
+* [How the code is organized](#how-the-code-is-organized)
+* [Feedback](#feedback)
+
+
 # Overview
 
 ![Pageripper Golang Lambda app using SAM](./doc/pageripper.png)
