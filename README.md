@@ -18,23 +18,17 @@ It also demonstrates how to build a complete code pipeline that continuously dep
 
 ### Example application
 
-The example application allows users to extract links from any website, does some light analysis on them, and allows users to download them all to a CSV file, while storing some job and metrics data in a DynamoDB table.
+The example application allows users to extract links from any website, does some light analysis on them, and allows users to download them all to a CSV file, while storing some job and metrics data in a DynamoDB table. Here's the overall flow of the application:
+
+![Pageripper app flow](./doc/pageripper-app-flow.png)
+
+Here's what the UI looks like in action:
 
 ![Pageripper example app](./doc/pageripper-demo.png)
 
 ### Code pipeline flow
 
 ![Pageripper codepipeline flow](./doc/pageripper-codepipeline.png)
-
-# TODO
-
-- [] Instrument correct region selection in SAM backend (for querying dynamoDB table)
-- [] Comment code
-- [] Cleanup React.js code
-- [] Codify dynamoDB table in SAM template
-- [x] Extend UI to read Ripcount on pageload and on response
-- [] Extend dynamoDB logic to write all rips to dynamoDB
-- [] Setup Route53 pageripper.net mapping
 
 # Getting started
 
@@ -112,3 +106,4 @@ If there are issues resolving packages
 # blow away the local node_modules folder and reinstall
 rm -rf node_modules && npm i
 ```
+
