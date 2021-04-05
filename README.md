@@ -90,6 +90,17 @@ The code pipeline builds the frontend React.js app and pushes its artifacts to a
 
 The backend leverages the AWS Serverless Application Model (SAM). Changes to the backend code are therefore built and delivered via calls to Cloudformation itself.
 
+### 5. Create the pageripper system count item in DynamoDB
+
+Log into your AWS account. Ensure you are in the correct region where your DynamoDB table was created. 
+
+Manually create a new table item with the following values: 
+
+`url`: `system`, 
+`c`:1000
+
+Going forward, the Lambda app will read and increment this item to track the overall count of usages. 
+
 # Developing the application locally
 
 
