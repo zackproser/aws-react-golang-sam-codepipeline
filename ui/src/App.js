@@ -32,7 +32,7 @@ class TooltipSection extends Component {
       What is this? <FontAwesome id="tippy" name="question-circle" style={{ color: '#fff' }} />
       <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="tippy" toggle={this.toggle}>
         <p>This is a full-stack application I built using <a href="https://golang.org/">Go</a> and <a href="https://reactjs.org/">React</a>.</p>
-        <p>This app scrapes data from a website and allow you to download it.</p>
+        <p>This app scrapes links from the URL you enter and allows you to download them as a CSV file.</p>
       </Tooltip>
       </div>
     )
