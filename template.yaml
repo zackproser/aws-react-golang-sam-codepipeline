@@ -14,12 +14,16 @@ Globals:
       AllowOrigin: "'*'"
 
 Resources:
+  # The Lambda Golang function
   PageRipperFunction:
     Type: AWS::Serverless::Function
     Properties:
+      # All the source code is defined in the ./pageripper/ directory
       CodeUri: pageripper/
       Handler: pageripper
+      # Our runtime is Go
       Runtime: go1.x
+      # We want Xray enabled
       Tracing: Active
       Events:
         CatchAll:
@@ -28,8 +32,28 @@ Resources:
             Path: "/{proxy+}"
             Method: ANY
       Policies:
+        # This is a convenience policy allowing our Lambda template to perform CRUD operations on the Lambda table
         - DynamoDBCrudPolicy:
-            TableName: pageripper
+            TableName: !Ref DynamoDBTable
+
+  # Create the DynamoDB table that the pageripper app stores counts in
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: pageripper
+      AttributeDefinitions:
+        - AttributeName: url
+          AttributeType: S
+        - AttributeName: c
+          AttributeType: N
+      KeySchema:
+        - AttributeName: url
+          KeyType: HASH
+        - AttributeName: c
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

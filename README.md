@@ -1,6 +1,6 @@
 # Table of contents
 * [Overview](#overview)
-* [Read the technical deep dive](#read-the-technical-deep-dive) 
+* [Read the technical deep dive](#read-the-technical-deep-dive)
 * [Getting Started](#getting-started)
 * [Developing the application locally](#developing-the-application-locally)
 * [How the code is organized](#how-the-code-is-organized)
@@ -12,6 +12,8 @@
 ![Pageripper Golang Lambda app using SAM](./doc/pageripper.png)
 
 This example repository contains a complete full-stack application deployed to AWS. See here for the deep-dive tutorial.
+
+This application is currently ready for publishing as an example, but it may receive future updates enhancing and hardening it.
 
 ### Stack at a glance
 
@@ -41,7 +43,7 @@ Here's what the UI looks like in action:
 
 # Read the technical deep dive
 
-I wrote a technical tutorial on how the components of this app all fit together, why I made some of the choices I did, what the tradeoffs were, and some of the things I learned along the way. Be sure to check out the article for more information, and subscribe if you found it useful. 
+I wrote a technical tutorial on how the components of this app all fit together, why I made some of the choices I did, what the tradeoffs were, and some of the things I learned along the way. Be sure to check out the article for more information, and subscribe if you found it useful.
 
 # Getting started
 
@@ -137,6 +139,6 @@ Meanwhile, the code pipeline uses two AWS CodeBuild projects. CodeBuild projects
 
 The CodeBuild project for the backend / SAM application actually uses AWS Sam CLI commands to package the Lambda function and store it in the defined S3 bucket, and one of the input parameters it uses to do this is the `template.yml` wherein SAM resources are defined.
 
-# Feedback 
+# Feedback
 
-I hope this example repository and its associated tutorial are helpful to you in some way. If you have feedback you can contact me via [LinkedIn](https://www.linkedin.com/in/zackproser/) or submit a Github issue to this repository. 
+I hope this example repository and its associated tutorial are helpful to you in some way. If you have feedback you can contact me via [LinkedIn](https://www.linkedin.com/in/zackproser/) or submit a Github issue to this repository.
