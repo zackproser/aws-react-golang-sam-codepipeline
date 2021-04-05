@@ -85,11 +85,11 @@ func readRipCount(chRipCount chan<- int, chCountRetrieved chan<- bool) {
 		},
 	})
 	if err != nil {
-		log.Fatalf("Got error calling GetItem: %s", err)
+		log.Debugf("Got error calling GetItem: %s", err)
 	}
 
 	if result.Item == nil {
-		log.Fatalf("Could not find item")
+		log.Debug("Could not find item")
 	}
 
 	item := Item{}

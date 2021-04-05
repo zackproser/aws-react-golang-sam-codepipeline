@@ -44,13 +44,9 @@ Resources:
       AttributeDefinitions:
         - AttributeName: url
           AttributeType: S
-        - AttributeName: c
-          AttributeType: N
       KeySchema:
         - AttributeName: url
           KeyType: HASH
-        - AttributeName: c
-          KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5

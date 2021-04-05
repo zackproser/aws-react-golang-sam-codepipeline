@@ -94,7 +94,7 @@ The backend leverages the AWS Serverless Application Model (SAM). Changes to the
 
 Log into your AWS account. Ensure you are in the correct region where your DynamoDB table was created. 
 
-Manually create a new table item with the following values: 
+Manually create a new table item with the following values. Note that you will need to choose `Append` in the UI dropdown and add a Number to the schema for the `c` Attribute: 
 
 `url`: `system`, 
 `c`:1000
