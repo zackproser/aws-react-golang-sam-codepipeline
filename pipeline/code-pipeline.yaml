@@ -30,7 +30,7 @@ Parameters:
   Repo:
     Type: String
     Description: The name of the Github repository to fetch and build
-    Default: lambda-pageripper-sam
+    Default: aws-react-golang-sam-codepipeline
   Branch:
     Type: String
     Description: The name of the Github repository branch to fetch and build
