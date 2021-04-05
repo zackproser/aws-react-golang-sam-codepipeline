@@ -43,7 +43,7 @@ Here's what the UI looks like in action:
 
 # Read the technical deep dive
 
-I wrote a technical tutorial on how the components of this app all fit together, why I made some of the choices I did, what the tradeoffs were, and some of the things I learned along the way. Be sure to check out the article for more information, and subscribe if you found it useful.
+I wrote [a technical tutorial](https://zackproser.substack.com/p/how-to-build-a-reactjs-and-lambda) on how the components of this app all fit together, why I made some of the choices I did, what the tradeoffs were, and some of the things I learned along the way. Be sure to check out the article for more information, and subscribe if you found it useful.
 
 # Getting started
 
