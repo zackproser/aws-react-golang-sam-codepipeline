@@ -276,10 +276,6 @@ class App extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getRipCount()
-  }
-
   showRequestError(error) {
     this.setState({
       errorMessage: (typeof error.message !== 'undefined') ? error.message : 'Something went wrong. Please try again later',
@@ -373,21 +369,6 @@ if (typeof body.ripcount !== "undefined") {
       console.error(error)
       this.showRequestError(error)
    })
-  }
-
-  getRipCount() {
-    fetch(process.env.REACT_APP_COUNT_API_URL, {
-      method: 'GET',
-      headers: this.getCommonHeaders()
-    })
-    .then(this.handleHTTPErrors)
-     .then(body => {
-        let count = (body.count) ? body.count : 1000
-        this.setRipCountState(count)
-     })
-    .catch((error) => {
-      console.error(error)
-    })
   }
 
   setUrlListState(target, links) {

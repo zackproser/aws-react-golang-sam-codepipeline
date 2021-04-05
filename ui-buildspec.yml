@@ -1,4 +1,9 @@
 version: 0.2
+
+env:
+  variables:
+    REACT_APP_API_URL: $REACT_APP_API_URL
+
 phases:
   install:
     runtime-versions:
