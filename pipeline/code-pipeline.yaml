@@ -94,7 +94,7 @@ Resources:
         # See: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
         Image: aws/codebuild/standard:5.0
         EnvironmentVariables:
-          - Name: APP_REACT_API_URL
+          - Name: REACT_APP_API_URL 
             Value: !ImportValue
               'Fn::Join': ['-', [!Ref ProjectName, 'stack', 'URL', 'API']]
       Source:
