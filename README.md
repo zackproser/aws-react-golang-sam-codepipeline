@@ -96,7 +96,8 @@ Log into your AWS account. Ensure you are in the correct region where your Dynam
 
 Manually create a new table item with the following values. Note that you will need to choose `Append` in the UI dropdown and add a Number to the schema for the `c` Attribute: 
 
-`url`: `system`, 
+`url`: `system`
+
 `c`:1000
 
 Going forward, the Lambda app will read and increment this item to track the overall count of usages. 
